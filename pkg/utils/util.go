@@ -16,6 +16,16 @@ var (
 	ErrPort       = errors.New("invalid port")
 )
 
+func GetBranchID(msg sip.Message) sip.MaybeString {
+	if viaHop, ok := msg.ViaHop(); ok {
+		if branch, ok := viaHop.Params.Get("branch"); ok {
+			return branch
+		}
+	}
+
+	return nil
+}
+
 func GetIP(addr string) string {
 	if strings.Contains(addr, ":") {
 		return strings.Split(addr, ":")[0]

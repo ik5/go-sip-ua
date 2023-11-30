@@ -47,7 +47,7 @@ func AuthFromValue(value string) *Authorization {
 		value2 := strings.Replace(match[2], "\"", "", -1)
 		switch match[1] {
 		case "qop":
-			auth.qop = value2
+			auth.qop = strings.Split(value2, ",")[0]
 		case "realm":
 			auth.realm = value2
 		case "algorithm":
@@ -97,9 +97,9 @@ func (auth *Authorization) CalcResponse(request sip.Request) *Authorization {
 	auth.nc += 1
 	hex := fmt.Sprintf("%x", auth.nc)
 	ncHex := "00000000"
-	auth.ncHex = ncHex[:len(ncHex)-1-len(hex)] + hex
+	auth.ncHex = ncHex[:len(ncHex)-len(hex)] + hex
 	// Nc-value = 8LHEX. Max value = 'FFFFFFFF'.
-	if auth.nc == 4294967296 {
+	if temp_nc := int64(auth.nc); temp_nc == 4294967296 {
 		auth.nc = 1
 		auth.ncHex = "00000001"
 	}
